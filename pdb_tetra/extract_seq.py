@@ -3,15 +3,17 @@ import gzip
 import pandas as pd
 import os
 
-from .utils import printProgressBar
-from .aminoacids import aminoAcid, d1
+from utils import printProgressBar
+from aminoacids import aminoAcid, d1
 	
-def extract_seq(chain):
+def extract_seq(chain, full=False):
 	""" returns seq of aminoacids in chain if there are any """
 	seq = ""
 	for residue in chain:
 		sym = str(residue.get_resname())
 		if sym == 'HOH':
+			if full:
+				seq += '-'
 			continue
 		if sym in d1.keys():
 			seq += d1[sym]
@@ -19,7 +21,7 @@ def extract_seq(chain):
 			# TODO: convert to warning
 			# h.write('ID: %s chain %s: unknown residue %s\n' % (pdbID, chainName, sym))
 			seq += '-'
-		continue
+		# continue
 	return seq
 	
 if __name__ == '__main__':
@@ -47,7 +49,7 @@ if __name__ == '__main__':
 			# ? should close before
 			f = open(start_dir + filename, 'r')
 		
-		structure = parser.get_structure('1', f)
+		structure = parser.get_structure('dummy', f)
 			
 		for model in structure:
 			for chain in model:
