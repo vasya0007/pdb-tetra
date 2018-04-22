@@ -25,7 +25,7 @@ def filter_duplicate(freq_dict):
     for current_id in freq_dict:
         if current_id not in duplicate_ids:
             for another_id in freq_dict:
-                if cosine_distance(freq_dict[current_id], freq_dict[another_id]) < 0.00001:
+                if another_id != current_id and cosine_distance(freq_dict[current_id], freq_dict[another_id]) < 0.1:
                     print(freq_dict[current_id])
                     print(freq_dict[another_id])
                     duplicate_ids.append(another_id)
