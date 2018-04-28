@@ -10,8 +10,9 @@ from utils import printProgressBar
 parser = pdb.PDBParser(QUIET=True)
 				
 def process_filtered():
+        output_f = open('stat.txt', 'w')
 	# dir with pdb files
-	start_dir = './pdb/'
+	start_dir = '../pdb/'
 
 	filtered = 'lables.txt'
 	tab = pd.read_table(filtered, header=None, names=['pdbID', 'chainID'])
@@ -21,10 +22,15 @@ def process_filtered():
 	for i in range(tab['pdbID'].values.size):
 		pdbID = tab['pdbID'].values[i]
 		chainID = tab['chainID'].values[i]
-		
+		filename = pdbID+'.pdb.gz'
+
+                print(pdbID,chainID)
+
+                #structure = list()
 		if currpdbID is None or currpdbID != pdbID:
 			currpdbID = pdbID
 			
+                        print(filename)
 			if not os.path.isfile(start_dir + filename):
 				print('file %s not found' % start_dir + filename)
 				continue
@@ -38,13 +44,14 @@ def process_filtered():
 			structure = parser.get_structure('1', f)
 				
 		# process chain
+                chain = None
 		for model in structure:
 			try:
 				chain = model[chainID]
 				break
 			except KeyError:
 				continue
-		
+                if chain is None: continue
 		tetraArr, anglesArr = angles_tetra(chain)
 		
 		if tetraArr is None: continue

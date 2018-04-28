@@ -21,18 +21,16 @@ def cosine_distance(u, v):
 
 def filter_duplicate(freq_dict):
     duplicate_ids = list()
-    i=0
+    with open('log_filter.txt', 'w') as log:
+        pass
+
     for current_id in freq_dict:
         if current_id not in duplicate_ids:
             for another_id in freq_dict:
-                if another_id != current_id and cosine_distance(freq_dict[current_id], freq_dict[another_id]) < 0.1:
-                    print(freq_dict[current_id])
-                    print(freq_dict[another_id])
+                if another_id != current_id and cosine_distance(freq_dict[current_id][0], freq_dict[another_id][0]) < 0.01:
+                    with open('log_filter.txt', 'a') as log:
+                        log.write('Последовательность:\n{}\nДубликат:\n{}\n'.format(str(freq_dict[current_id][1]), str(freq_dict[another_id][1]))+'#'*80+'\n')
                     duplicate_ids.append(another_id)
-        print('Номер Id:{} и число повторений:{}'.format(i, len(duplicate_ids)))
-        i+=1
-        #if i == 20:
-        #    break
     print(len(freq_dict.keys()))
     for id in duplicate_ids:
         try:
@@ -47,7 +45,7 @@ def create_freq_vector(seq):
     freq_vector = list()
     for amino_acid in AMINO_ACIDS:
         freq_vector.append(seq.count(amino_acid))
-    return freq_vector
+    return [i/sum(freq_vector) for i in freq_vector]
 
 
 def filter_data(data):
@@ -56,7 +54,7 @@ def filter_data(data):
         for chain in data[pdb_id]:
             if len(data[pdb_id][chain]) < 10:
                 continue
-            freq_dict[pdb_id+'_'+chain] = create_freq_vector(data[pdb_id][chain])
+            freq_dict[pdb_id+'_'+chain] = [create_freq_vector(data[pdb_id][chain]), data[pdb_id][chain]]
     return freq_dict
 
 
